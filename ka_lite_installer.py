@@ -8,16 +8,18 @@ from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from kivy.animation import Animation
 from kivy.config import Config
-Config.set('graphics', 'width', '450')
-Config.set('graphics', 'height', '350')
-Config.set('kivy', 'window_icon', 'logo48.ico')
-import os, sys, shutil
 from kivy.factory import Factory
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.event import EventDispatcher
 import win32api
+import os, sys, shutil
+
+
+Config.set('graphics', 'width', '450')
+Config.set('graphics', 'height', '350')
+Config.set('kivy', 'window_icon', 'logo48.ico')
 
 
 def get_drives_in_windows():
@@ -29,12 +31,11 @@ def get_drives_in_windows():
 DRIVES = get_drives_in_windows()
 TARGET_DIR = ""
     
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
+
 Builder.load_string("""
 
 <WelcomeScreen>:
+    id: welcome_id
     BoxLayout:
         orientation: 'vertical'
         
@@ -49,6 +50,7 @@ Builder.load_string("""
                 on_press: root.manager.current = 'directory'
             Button:
                 text: 'Quit'
+                on_press: welcome_id.exit()
 
 <LicenseScreen>:
     BoxLayout:
@@ -139,9 +141,10 @@ Builder.load_string("""
                 on_press: finish_id.exit()
 """)
 
-# Declare both screens
+
 class WelcomeScreen(Screen):
-    pass
+    def exit(self):
+        sys.exit(0)
 
 class LicenseScreen(Screen):
     pass
@@ -293,7 +296,6 @@ class FinishScreen(Screen):
         sys.exit(0)
                  
 
-# Create the screen manager
 sm = ScreenManager()
 sm.add_widget(WelcomeScreen(name='welcome'))
 sm.add_widget(LicenseScreen(name='license'))
