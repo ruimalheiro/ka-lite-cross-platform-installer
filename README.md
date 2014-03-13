@@ -1,7 +1,7 @@
 KA Lite cross platform installer
 ================================
 
-This project is a python version of the installer that intend to uniform the way the user see KA Lite during the install or update process.
+This project is a python version of the installer that intend to unify the way the user sees KA Lite during the install or update process.
 
 ----
 #### Key features:
