@@ -15,6 +15,6 @@ This project is a python version of the installer that intend to unify the way t
 * Have python 2.7 installed;
 * Run "windows_test.bat";
 
----
+----
 #### Instructions for testing in Linux:
 * (Coming soon...)
