@@ -86,7 +86,9 @@ def main():
   
     root_window = Tk()
     root_window.resizable(0,0)
-    root_window.iconbitmap("images/logo48.ico")
+
+    if USE_IMAGES:
+    	root_window.iconbitmap("images/logo48.ico")
 
     installer = Installer(root_window)
 
