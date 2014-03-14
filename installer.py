@@ -5,7 +5,7 @@ USE_IMAGES = True
 try:
 	from PIL import Image, ImageTk
 except ImportError:
-	raise ImportError
+	print "Please check if PIL is installed."
 	USE_IMAGES = False
 
 import tkMessageBox
