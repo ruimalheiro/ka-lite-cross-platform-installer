@@ -6,15 +6,18 @@ This project is a python version of the installer that intend to unify the way t
 ----
 #### Key features:
 * All the installer logic and the interfaces are written in python;
-* Good looking interfaces using [Kivy](http://kivy.org/#home);
+* Simple and nice looking interfaces using [Tkinter](https://wiki.python.org/moin/TkInter);
 * Can be easily integrated into KA Lite;
 * Can be packaged and distributed using [PyInstaller](http://www.pyinstaller.org/);
 
 ---
 #### Instructions for testing in Windows:
-* Have python 2.7 installed;
-* Run "windows_test.bat";
+* (Coming soon...)
 
 ----
 #### Instructions for testing in Linux:
+* (Coming soon...)
+
+----
+#### Instructions for testing in MAC OS X:
 * (Coming soon...)
