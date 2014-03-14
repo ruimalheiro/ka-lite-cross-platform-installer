@@ -34,7 +34,7 @@ class Installer(Frame):
         self.pack(fill=BOTH, expand=1)
         self.centerWindow()
 
-        Style().configure("TButton", font='serif 10')
+        #Style().configure("TButton", font='serif 10')
 
         if USE_IMAGES:
 	        fle_logo = Image.open("images//flelogo.png")
@@ -61,6 +61,8 @@ class Installer(Frame):
 
         version_label = Label(self, text="KA Lite version: " + str(current_version), width=30, height=5)
         version_label.place(x=0, y=250)
+
+        self.pack()
 
 
     def centerWindow(self):
