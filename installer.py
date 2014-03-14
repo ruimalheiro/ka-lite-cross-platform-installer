@@ -1,5 +1,5 @@
 from Tkinter import Tk, Frame, BOTH, Label, Button
-from PIL import Image, ImageTk
+import Image, ImageTk
 import tkMessageBox
 from ttk import Style
 import sys
