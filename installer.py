@@ -1,5 +1,6 @@
 from Tkinter import *
 from ScrolledText import ScrolledText
+import tkMessageBox as mb
 import sys
 
 #In order to retrieve the version, we need to add ka-lite to the path, so we can import kalite.
@@ -11,6 +12,90 @@ VERSION = version.VERSION
 
 #KA Lite license.
 LICENSE = open("ka-lite/LICENSE").read()
+
+class WelcomeFrame(Frame):
+    """Show the welcome frame where the user can start installing KA Lite or quit.
+
+    Attributes:
+        parent: A pointer to the parent frame.
+        fle_logo_photo: A pointer to FLE logo image.
+        kalite_logo_photo A pointer to KA Lite logo image.
+        top_frame: The top frame where FLE logo is placed.
+        bottom_frame: Bottom frame.
+        bottom_left_frame: This frame is where the KA Lite logo and the version are displayed.
+        bottom_right_frame: This frame is where install button and quit button are placed.
+        fle_label: A label that shows the image poited by fle_logo_photo.
+        kalite_label: A label that shows the image pointed by kalite_logo_photo. 
+        install_button: A button to start the installion and proceed to the welcome window.
+        quit_button: A button to quit the installer.
+        version_label: A label that shows the version of KA Lite.
+    """
+
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        """Inits the frame."""
+
+        self.parent = parent
+        self.parent.title("FLE - KA Lite Setup - Welcome")
+        self.loadImages()
+        self.configureLayout()
+        self.drawLayout()
+
+    def loadImages(self):
+        """Loads the images. The size must be the exact size of the image."""
+
+        self.fle_logo_photo = PhotoImage(file="images/flelogo_resized.gif", width=455, height=150)
+        self.kalite_logo_photo = PhotoImage(file="images/kalitelogo_resized.gif", width=255, height=65)
+
+    def configureLayout(self):
+        """Configures the frame and the components that belong to this frame."""
+
+        self.pack(fill=BOTH, expand=True)
+        self.top_frame = Frame(self)
+        self.bottom_frame = Frame(self)
+        self.bottom_left_frame = Frame(self.bottom_frame)
+        self.bottom_right_frame = Frame(self.bottom_frame)
+
+        self.fle_label = Label(self.top_frame, image=self.fle_logo_photo, width=452, height=150)
+        self.fle_label.image = self.fle_logo_photo
+
+        self.kalite_label = Label(self.bottom_left_frame, image=self.kalite_logo_photo, width=250, height=80)
+        self.kalite_label.image = self.kalite_logo_photo
+
+        self.install_button = Button(self.bottom_right_frame, text="Install", command=self.showLicenseFrame, width=24, height=5)
+
+        self.quit_button = Button(self.bottom_right_frame, text="Quit", command=self.confirmQuit, width=24, height=5)
+
+        self.version_label = Label(self.bottom_left_frame, text="KA Lite version: " + str(VERSION), width=30, height=5)
+
+    def drawLayout(self):
+        """Draws the frame with all the components that were previously configured."""
+
+        self.top_frame.pack(fill=BOTH, expand=True)
+        self.bottom_frame.pack(fill=BOTH, expand=True)
+        self.bottom_left_frame.pack(fill=BOTH, expand=True, side=LEFT)
+        self.bottom_right_frame.pack(fill=BOTH, expand=True, side=RIGHT)
+        self.fle_label.pack(expand=True, fill=X)
+        self.kalite_label.pack(expand=True, fill=X)
+        self.install_button.pack(side=TOP, fill=X)
+        self.quit_button.pack(side=BOTTOM, fill=X)
+        self.version_label.pack(expand=True, fill=X)
+
+    def showLicenseFrame(self):
+        """Changes the frame to the license frame."""
+        self.pack_forget()
+        self.destroy()
+        LicenseFrame(self.parent)
+
+    def showServerConfigurationFrame(self):
+        """Changes the frame to the server configuration frame."""
+        self.pack_forget()
+        self.destroy()
+        ServerConfigurationFrame(self.parent)
+
+    def confirmQuit(self):
+        if mb.askyesno("Quit the installer.", "Are you sure you want to quit?"):
+            self.quit()
 
 
 class LicenseFrame(Frame):
@@ -39,9 +124,10 @@ class LicenseFrame(Frame):
         
         self.pack(fill=BOTH, expand=True)
 
-        self.license_area = ScrolledText(self, width=4, height=4)
+        self.license_area = ScrolledText(self, width=4, height=4, wrap=WORD)
         self.license_area.insert(INSERT, LICENSE)
         self.license_area.config(state=DISABLED)
+        self.license_area.focus()
 
         self.accept_var = IntVar()
         self.accept_button = Checkbutton(self, text="I accept the license terms.", variable=self.accept_var, command=self.onCheck)
@@ -74,79 +160,14 @@ class LicenseFrame(Frame):
         WelcomeFrame(self.parent)
 
 
-class WelcomeFrame(Frame):
-    """Show the welcome frame where the user can start installing KA Lite or quit.
-
-    Attributes:
-        parent: A pointer to the parent frame.
-        fle_logo_photo: A pointer to FLE logo image.
-        kalite_logo_photo A pointer to KA Lite logo image.
-        top_frame: The top frame where FLE logo is placed.
-        bottom_frame: Bottom frame.
-        bottom_left_frame: This frame is where the KA Lite logo and the version are displayed.
-        bottom_right_frame: This frame is where install button and quit button are placed.
-        fle_label: A label that shows the image poited by fle_logo_photo.
-        kalite_label: A label that shows the image pointed by kalite_logo_photo. 
-        install_button: A button to start the installion and proceed to the welcome window.
-        quit_button: A button to quit the installer.
-        version_label: A label that shows the version of KA Lite.
-    """
+class ServerConfigurationFrame(Frame):
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        """Inits the frame."""
+        """Inits the frame"""
 
         self.parent = parent
-        self.parent.title("FLE - KA Lite Setup - Welcome!")
-        self.loadImages()
-        self.configureLayout()
-        self.drawLayout()
-
-    def loadImages(self):
-        """Loads the images. The size must be the exact size of the image."""
-
-        self.fle_logo_photo = PhotoImage(file="images/flelogo_resized.gif", width=455, height=150)
-        self.kalite_logo_photo = PhotoImage(file="images/kalitelogo_resized.gif", width=255, height=65)
-
-    def configureLayout(self):
-        """Configures the frame and the components that belong to this frame."""
-
-        self.pack(fill=BOTH, expand=True)
-        self.top_frame = Frame(self)
-        self.bottom_frame = Frame(self)
-        self.bottom_left_frame = Frame(self.bottom_frame)
-        self.bottom_right_frame = Frame(self.bottom_frame)
-
-        self.fle_label = Label(self.top_frame, image=self.fle_logo_photo, width=452, height=150)
-        self.fle_label.image = self.fle_logo_photo
-
-        self.kalite_label = Label(self.bottom_left_frame, image=self.kalite_logo_photo, width=250, height=80)
-        self.kalite_label.image = self.kalite_logo_photo
-
-        self.install_button = Button(self.bottom_right_frame, text="Install", command=self.showLicenseFrame, width=24, height=5)
-
-        self.quit_button = Button(self.bottom_right_frame, text="Quit", command=self.quit, width=24, height=5)
-
-        self.version_label = Label(self.bottom_left_frame, text="KA Lite version: " + str(VERSION), width=30, height=5)
-
-    def drawLayout(self):
-        """Draws the frame with all the components that were previously configured."""
-
-        self.top_frame.pack(fill=BOTH, expand=True)
-        self.bottom_frame.pack(fill=BOTH, expand=True)
-        self.bottom_left_frame.pack(fill=BOTH, expand=True, side=LEFT)
-        self.bottom_right_frame.pack(fill=BOTH, expand=True, side=RIGHT)
-        self.fle_label.pack(expand=True, fill=X)
-        self.kalite_label.pack(expand=True, fill=X)
-        self.install_button.pack(side=TOP, fill=X)
-        self.quit_button.pack(side=BOTTOM, fill=X)
-        self.version_label.pack(expand=True, fill=X)
-
-    def showLicenseFrame(self):
-        """Changes the frame to the license frame."""
-        self.pack_forget()
-        self.destroy()
-        LicenseFrame(self.parent)
+        self.parent.title("FLE - KA Lite Setup - Server configuration")
 
 
 def createRootWindow(width, height):
@@ -165,6 +186,7 @@ def createRootWindow(width, height):
 
     root_window = Tk()
     root_window.resizable(0,0)
+    root_window.protocol('WM_DELETE_WINDOW', ignoreXButton)
 
     screen_width = root_window.winfo_screenwidth()
     screen_height = root_window.winfo_screenheight()
@@ -176,6 +198,9 @@ def createRootWindow(width, height):
 
     return root_window
 
+def ignoreXButton():
+    """For full control over the user options, we are ignoring the closing button that would terminate the installer in any point."""
+    pass
 
 def main():
     
