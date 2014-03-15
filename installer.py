@@ -12,7 +12,7 @@ current_version = version.VERSION
 
 
 class LicenseWindow(Frame):
-    """Show the license agreement and asks the user to accept it or not.
+    """Shows the license agreement and asks the user to accept it in order to proceed.
 
     Attributes:
         parent: A pointer to the parent container.
@@ -23,10 +23,11 @@ class LicenseWindow(Frame):
         """Inits the frame."""
 
         self.parent = parent
+        self.parent.title("FLE - KA Lite Setup - License")
         self.configureLayout()
 
     def configureLayout(self):
-        """Configures the Frame layout."""
+        """Configures the frame and the components that belong to this frame."""
         self.pack(fill=X, expand=1)
 
 
@@ -36,6 +37,13 @@ class WelcomeWindow(Frame):
 
     Attributes:
         parent: A pointer to the parent container.
+        fle_logo_photo: A pointer to FLE logo image.
+        kalite_logo_photo A pointer to KA Lite logo image.
+        fle_label: A label that shows the image poited by fle_logo_photo.
+        kalite_label: A label that shows the image pointed by kalite_logo_photo. 
+        install_button: A button to start the installion and proceed to the welcome window.
+        quit_button: A button to quit the installer.
+        version_label: A label that shows the version of KA Lite.
     """
 
     def __init__(self, parent):
@@ -43,18 +51,19 @@ class WelcomeWindow(Frame):
         """Inits the frame."""
 
         self.parent = parent
+        self.parent.title("FLE - KA Lite Setup - Welcome!")
         self.loadImages()
         self.configureLayout()
         self.drawLayout()
 
     def loadImages(self):
-        """Load the images with the image size specified."""
+        """Loads the images. The size must be the exact size of the image."""
 
         self.fle_logo_photo = PhotoImage(file="images/flelogo_resized.gif", width=455, height=150)
         self.kalite_logo_photo = PhotoImage(file="images/kalitelogo_resized.gif", width=255, height=65)
 
     def configureLayout(self):
-        """Configure the frame and the components that are going to be drawn."""
+        """Configures the frame and the components that belong to this frame."""
 
         self.pack(fill=BOTH, expand=1)
 
@@ -71,27 +80,28 @@ class WelcomeWindow(Frame):
         self.version_label = Label(self, text="KA Lite version: " + str(current_version), width=30, height=5)
 
     def drawLayout(self):
-        """Draw the frame with all the components."""
+        """Draws the frame with all the components that were previously configured."""
 
         self.fle_label.place(x=-4, y=-4)
         self.kalite_label.place(x=0, y=160)
         self.install_button.place(x=265, y=165)
         self.quit_button.place(x=265, y=260)
         self.version_label.place(x=0, y=250)
+        self.pack()
 
     def startInstall(self):
-        """Change to license screen."""
-        tkMessageBox.showinfo("Hello World!", "Installing KA Lite...")
+        """Changes the frame to the license frame."""
+        self.pack_forget()
+        LicenseWindow(self.parent)
 
 
-def createRootWindow(title, width, height):
-    """Creates and instance of Tk and configures it.
+def createRootWindow(width, height):
+    """Creates an instance of Tk which is the main window of the application and configure it.
 
     Creates the main window of the installer. This window is also used to
     add or remove any other component.
 
     Args:
-        title: The title that we want to show on the top bar of the window.
         width: An integer that corresponds to the width.
         height: An integer value that corresponds to the height.
 
@@ -101,7 +111,6 @@ def createRootWindow(title, width, height):
 
     root_window = Tk()
     root_window.resizable(0,0)
-    root_window.title(title)
 
     screen_width = root_window.winfo_screenwidth()
     screen_height = root_window.winfo_screenheight()
@@ -116,7 +125,7 @@ def createRootWindow(title, width, height):
 
 def main():
     
-    root_window = createRootWindow("FLE - KA Lite Setup - Welcome!", 445, 350)
+    root_window = createRootWindow(445, 350)
     
     WelcomeWindow(root_window)
 
