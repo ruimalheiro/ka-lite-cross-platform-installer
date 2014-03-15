@@ -1,6 +1,5 @@
-from Tkinter import Tk, Frame, BOTH, Label, Button, RIGHT, PhotoImage, X, Y
-from ttk import Style
-import tkMessageBox
+from Tkinter import *
+from ScrolledText import ScrolledText
 import sys
 
 #In order to retrieve the version, we need to add ka-lite to the path, so we can import kalite.
@@ -8,14 +7,22 @@ sys.path.insert(0, './ka-lite')
 from kalite import version
 
 #The current version of KA Lite.
-current_version = version.VERSION
+VERSION = version.VERSION
+
+#KA Lite license.
+LICENSE = open("ka-lite/LICENSE").read()
 
 
-class LicenseWindow(Frame):
+class LicenseFrame(Frame):
     """Shows the license agreement and asks the user to accept it in order to proceed.
 
     Attributes:
         parent: A pointer to the parent container.
+        license_area: The text area that will hold the license.
+        accept_var: This variable contains the integer code that corresponds to the state of the accept_button.
+        accept_button: The Checkbutton used to accept the license terms.
+        next_button: Button to proceed in the installion to the next frame.
+        back_button: Button to return to the WelcomeFrame.
     """
 
     def __init__(self, parent):
@@ -25,15 +32,50 @@ class LicenseWindow(Frame):
         self.parent = parent
         self.parent.title("FLE - KA Lite Setup - License")
         self.configureLayout()
+        self.drawLayout()
 
     def configureLayout(self):
         """Configures the frame and the components that belong to this frame."""
-        self.pack(fill=X, expand=1)
+        
+        self.pack(fill=BOTH, expand=1)
+
+        self.license_area = ScrolledText(self, width=4, height=4)
+        self.license_area.insert(INSERT, LICENSE)
+        self.license_area.config(state=DISABLED)
+
+        self.accept_var = IntVar()
+        self.accept_button = Checkbutton(self, text="I accept the license terms.", variable=self.accept_var, command=self.onCheck)
+
+        self.next_button = Button(self, text="Next", width=15, height=2, state=DISABLED)
+        self.back_button = Button(self, text="Back", width=15, height=2, command=self.showWelcomeFrame)
+
+    def drawLayout(self):
+        """Draws the frame with all the components that were previously configured."""
+
+        self.pack(fill=BOTH, expand=1)
+        self.license_area.pack(expand=True, fill=BOTH)
+        self.accept_button.pack(side=LEFT)
+        self.next_button.pack(side=RIGHT, padx=5, pady=5)
+        self.back_button.pack(side=RIGHT)
+
+    def onCheck(self):
+        """Enables and disables the button to continue."""
+
+        if self.accept_var.get() == 1:
+            self.next_button.config(state=NORMAL)
+        else:
+            self.next_button.config(state=DISABLED)
+
+    def showWelcomeFrame(self):
+        """Changes the frame to the welcome frame."""
+
+        self.pack_forget()
+        self.destroy()
+        WelcomeFrame(self.parent)
 
 
-
-class WelcomeWindow(Frame):
-    """Show the welcome window where the user can start installing KA Lite or quit.
+class WelcomeFrame(Frame):
+    """Show the welcome frame where the user can start installing KA Lite or quit.
 
     Attributes:
         parent: A pointer to the parent container.
@@ -73,11 +115,11 @@ class WelcomeWindow(Frame):
         self.kalite_label = Label(self, image=self.kalite_logo_photo, width=250, height=80)
         self.kalite_label.image = self.kalite_logo_photo
 
-        self.install_button = Button(self, text="Install", command=self.startInstall, width=24, height=5)
+        self.install_button = Button(self, text="Install", command=self.showLicenseFrame, width=24, height=5)
 
         self.quit_button = Button(self, text="Quit", command=self.quit, width=24, height=5)
 
-        self.version_label = Label(self, text="KA Lite version: " + str(current_version), width=30, height=5)
+        self.version_label = Label(self, text="KA Lite version: " + str(VERSION), width=30, height=5)
 
     def drawLayout(self):
         """Draws the frame with all the components that were previously configured."""
@@ -87,12 +129,12 @@ class WelcomeWindow(Frame):
         self.install_button.place(x=265, y=165)
         self.quit_button.place(x=265, y=260)
         self.version_label.place(x=0, y=250)
-        self.pack()
 
-    def startInstall(self):
+    def showLicenseFrame(self):
         """Changes the frame to the license frame."""
         self.pack_forget()
-        LicenseWindow(self.parent)
+        self.destroy()
+        LicenseFrame(self.parent)
 
 
 def createRootWindow(width, height):
@@ -127,7 +169,7 @@ def main():
     
     root_window = createRootWindow(445, 350)
     
-    WelcomeWindow(root_window)
+    WelcomeFrame(root_window)
 
     root_window.mainloop()
 
