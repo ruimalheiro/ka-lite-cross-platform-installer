@@ -112,11 +112,23 @@ class LicenseFrame(Frame):
 
         self.parent = parent
         self.parent.title("FLE - KA Lite Setup - License")
+        self.loadImages()
         self.configureLayout()
         self.drawLayout()
 
+    def loadImages(self):
+        """Loads the images. The size must be the exact size of the image."""
+
+        self.kaliteleaf_photo = PhotoImage(file="images/kaliteleaf.gif", width=16, height=16)
+
     def configureLayout(self):
         """Configures the frame and the components that belong to this frame."""
+
+        self.top_frame = Frame(self, relief=RAISED, borderwidth=1)
+
+        self.tip_label = Label(self.top_frame, text="Please read the license carefully.")
+        self.kaliteleaf_label = Label(self.top_frame, image=self.kaliteleaf_photo, width=16, height=16)
+        self.kaliteleaf_label.image = self.kaliteleaf_photo
         
         self.license_area = ScrolledText(self, width=4, height=4, wrap=WORD)
         self.license_area.insert(INSERT, LICENSE)
@@ -132,6 +144,9 @@ class LicenseFrame(Frame):
     def drawLayout(self):
         """Draws the frame with all the components that were previously configured."""
 
+        self.top_frame.pack(fill=X)
+        self.tip_label.pack(fill=X, side=LEFT, padx=5, pady=5)
+        self.kaliteleaf_label.pack(fill=X, side=RIGHT, padx=5, pady=5)
         self.pack(fill=BOTH, expand=True)
         self.license_area.pack(fill=BOTH, expand=True)
         self.accept_button.pack(side=LEFT)
@@ -310,7 +325,8 @@ def main():
     
     root_window = createRootWindow(445, 350)
     
-    WelcomeFrame(root_window)
+    #WelcomeFrame(root_window)
+    LicenseFrame(root_window)
 
     root_window.mainloop()
 
