@@ -2,6 +2,7 @@ from Tkinter import *
 from ScrolledText import ScrolledText
 import tkMessageBox as mb
 import tkFileDialog as fd
+from ttk import Progressbar
 import sys, os, platform
 
 #In order to retrieve the version, we need to add ka-lite to the path, so we can import kalite.
@@ -13,6 +14,9 @@ VERSION = version.VERSION
 
 #KA Lite license.
 LICENSE = open("ka-lite/LICENSE").read()
+
+#Default installation target path
+TARGET_PATH = os.path.dirname(os.path.abspath(__file__))
 
 class WelcomeFrame(Frame):
     """Show the welcome frame where the user can start installing KA Lite or quit.
@@ -323,12 +327,14 @@ class SelectPathFrame(Frame):
 
         self.path_frame = Frame(self)
         self.path_entry = Entry(self.path_frame, width=50)
-        self.path_entry.insert(INSERT, os.path.dirname(os.path.abspath(__file__)))
+
+        global TARGET_PATH
+        self.path_entry.insert(INSERT, TARGET_PATH)
         self.browse_button = Button(self.path_frame, text="Browse", width=8, height=1, command=self.browseDirectory)
 
         self.bottom_space_frame = Frame(self)
 
-        self.next_button = Button(self, text="Next", width=15, height=2)
+        self.next_button = Button(self, text="Next", width=15, height=2, command=self.showInstallationFrame)
         self.back_button = Button(self, text="Back", width=15, height=2, command=self.showServerConfigurationFrame)
 
     def drawLayout(self):
@@ -350,19 +356,74 @@ class SelectPathFrame(Frame):
         self.bottom_space_frame.pack(fill=BOTH, expand=True)
 
         self.next_button.pack(side=RIGHT, padx=5, pady=5)
-        self.back_button.pack(side=RIGHT)        
+        self.back_button.pack(side=RIGHT)
 
     def browseDirectory(self):
-        path = fd.askdirectory()
+        global TARGET_PATH
+        TARGET_PATH = fd.askdirectory()
         if platform.system() == 'Windows':
-            path = path.replace("/", "\\")
+            TARGET_PATH = TARGET_PATH.replace("/", "\\")
         self.path_entry.delete(0, END)
-        self.path_entry.insert(INSERT, path)
+        self.path_entry.insert(INSERT, TARGET_PATH)
 
     def showServerConfigurationFrame(self):
         self.pack_forget()
         self.destroy()
         ServerConfigurationFrame(self.parent)
+
+    def showInstallationFrame(self):
+        self.pack_forget()
+        self.destroy()
+        InstallationFrame(self.parent)
+
+
+class InstallationFrame(Frame):
+
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self.parent = parent
+        self.parent.title("FLE - KA Lite Setup - Start installation")
+        self.b = Button(self, text="teste", command=self.startInstallation)
+        self.pack(fill=BOTH, expand=True)
+        self.b.pack()
+
+        self.pb = Progressbar(self, mode="indeterminate")
+        self.pb.pack()
+
+        self.pb2 = Progressbar(self, mode="determinate")
+        self.pb2.pack()
+
+    def startInstallation(self):
+        global TARGET_PATH
+        if not TARGET_PATH:
+            return
+        src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ka-lite")
+        self.pb.start(10)
+        #num_files=self.countFiles(src)
+        
+ 
+        t1 = FuncThread(self.countFiles, src, self.pb)
+        t1.start()
+        #self.pb.stop()
+
+    def countFiles(self, directory, pb):
+        files = []     
+        if os.path.isdir(directory):
+            for path, dirs, filenames, in os.walk(directory):
+                files.extend(filenames)
+                print "1"
+        pb.stop()
+        return len(files)
+
+import threading
+class FuncThread(threading.Thread):
+    def __init__(self, target, *args):
+        self._target = target
+        self._args = args
+        threading.Thread.__init__(self)
+ 
+    def run(self):
+        self._target(*self._args)
 
 
 def createRootWindow(width, height):
@@ -404,7 +465,8 @@ def main():
     
     root_window = createRootWindow(445, 350)
     
-    WelcomeFrame(root_window)
+    #WelcomeFrame(root_window)
+    SelectPathFrame(root_window)
 
     root_window.mainloop()
 
