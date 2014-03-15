@@ -195,6 +195,18 @@ class ServerConfigurationFrame(Frame):
         self.description_label = Label(self.description_frame, text="Description:")
         self.description_entry = Entry(self.description_frame, width=42)
 
+        self.run_at_startup_frame = Frame(self)
+        self.run_at_startup_var = IntVar()
+        self.run_at_startup_button = Checkbutton(self.run_at_startup_frame, text="Run KA Lite when the system starts.", variable=self.run_at_startup_var, command=self.onCheckSystemStartUp)
+
+        self.run_at_user_log_frame = Frame(self)
+        self.run_at_user_log_var = IntVar()
+        self.run_at_user_log_button = Checkbutton(self.run_at_user_log_frame, text="Run KA Lite when the user logs in.", variable=self.run_at_user_log_var, command=self.onCheckUserLogs)
+
+        self.auto_start_frame = Frame(self)
+        self.auto_start_var = IntVar()
+        self.auto_start_buttom = Checkbutton(self.auto_start_frame, text="Auto start the server.", variable=self.auto_start_var, command=self.onCheckAutoStart, state=DISABLED)
+
         self.bottom_space_frame = Frame(self)
 
         self.next_button = Button(self, text="Next", width=15, height=2)
@@ -205,12 +217,24 @@ class ServerConfigurationFrame(Frame):
         self.top_frame.pack(fill=X)
         self.tip_label.pack(fill=X, side=LEFT, padx=5, pady=5)
         self.kaliteleaf_label.pack(fill=X, side=RIGHT, padx=5, pady=5)
-        self.server_frame.pack(fill=X, expand=False, pady=10)
-        self.server_name_label.pack(expand=False, side=LEFT, padx=10)
-        self.server_name_entry.pack(expand=False, side=RIGHT, padx=10)
-        self.description_frame.pack(fill=X, expand=False)
-        self.description_label.pack(expand=False, side=LEFT, padx=10)
-        self.description_entry.pack(expand=False, side=RIGHT, padx=10)
+
+        self.server_frame.pack(fill=X, pady=10)
+        self.server_name_label.pack(side=LEFT, padx=10)
+        self.server_name_entry.pack(side=RIGHT, padx=10)
+
+        self.description_frame.pack(fill=X)
+        self.description_label.pack(side=LEFT, padx=10)
+        self.description_entry.pack(side=RIGHT, padx=10)
+
+        self.run_at_startup_frame.pack(fill=X)
+        self.run_at_startup_button.pack(side=LEFT, padx=10, pady=(10,0))
+
+        self.run_at_user_log_frame.pack(fill=X)
+        self.run_at_user_log_button.pack(side=LEFT, padx=10)
+
+        self.auto_start_frame.pack(fill=X)
+        self.auto_start_buttom.pack(side=LEFT, padx=10)
+
         self.bottom_space_frame.pack(fill=BOTH, expand=True)
         self.next_button.pack(side=RIGHT, padx=5, pady=5)
         self.back_button.pack(side=RIGHT)
@@ -219,6 +243,33 @@ class ServerConfigurationFrame(Frame):
         self.pack_forget()
         self.destroy()
         LicenseFrame(self.parent)
+
+    def setAutoStartButtonStatus(self):
+        if self.run_at_startup_var.get() or self.run_at_user_log_var.get() == 1:
+            self.auto_start_buttom.config(state=NORMAL)
+        else:
+            self.auto_start_buttom.config(state=DISABLED)
+
+    def onCheckSystemStartUp(self):
+        if self.run_at_startup_var.get() == 1:
+            pass
+        else:
+            pass
+        self.setAutoStartButtonStatus()
+
+    def onCheckUserLogs(self):
+        if self.run_at_user_log_var.get() == 1:
+            pass
+        else:
+            pass
+        self.setAutoStartButtonStatus()
+
+    def onCheckAutoStart(self):
+        if self.auto_start_var.get() == 1:
+            pass
+        else:
+            pass
+
 
 def createRootWindow(width, height):
     """Creates an instance of Tk which is the main window of the application and configure it.
