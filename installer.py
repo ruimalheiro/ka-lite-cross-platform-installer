@@ -404,8 +404,7 @@ def main():
     
     root_window = createRootWindow(445, 350)
     
-    #WelcomeFrame(root_window)
-    SelectPathFrame(root_window)
+    WelcomeFrame(root_window)
 
     root_window.mainloop()
 
