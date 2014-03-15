@@ -319,10 +319,10 @@ class SelectPathFrame(Frame):
         self.path_label_one_frame = Frame(self)
         self.path_label_one = Label(self.path_label_one_frame, text="Setup will install KA Lite into the following folder.")
         self.path_label_two_frame = Frame(self)
-        self.path_label_two = Label(self.path_label_two_frame, text="To continue, click Next. If you would like to select a different folder, click Browse.")
+        self.path_label_two = Label(self.path_label_two_frame, text="If you would like to select a different folder, click Browse.")
 
         self.path_frame = Frame(self)
-        self.path_entry = Entry(self.path_frame, width=55)
+        self.path_entry = Entry(self.path_frame, width=50)
         self.path_entry.insert(INSERT, os.path.dirname(os.path.abspath(__file__)))
         self.browse_button = Button(self.path_frame, text="Browse", width=8, height=1, command=self.browseDirectory)
 
