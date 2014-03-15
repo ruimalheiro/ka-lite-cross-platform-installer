@@ -2,7 +2,7 @@ from Tkinter import *
 from ScrolledText import ScrolledText
 import tkMessageBox as mb
 import tkFileDialog as fd
-import sys, os
+import sys, os, platform
 
 #In order to retrieve the version, we need to add ka-lite to the path, so we can import kalite.
 sys.path.insert(0, './ka-lite')
@@ -353,7 +353,9 @@ class SelectPathFrame(Frame):
         self.back_button.pack(side=RIGHT)        
 
     def browseDirectory(self):
-        path = fd.askdirectory().replace("/", "\\")
+        path = fd.askdirectory()
+        if platform.system() == 'Windows':
+            path = path.replace("/", "\\")
         self.path_entry.delete(0, END)
         self.path_entry.insert(INSERT, path)
 
