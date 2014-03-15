@@ -1,7 +1,8 @@
 from Tkinter import *
 from ScrolledText import ScrolledText
 import tkMessageBox as mb
-import sys
+import tkFileDialog as fd
+import sys, os
 
 #In order to retrieve the version, we need to add ka-lite to the path, so we can import kalite.
 sys.path.insert(0, './ka-lite')
@@ -224,7 +225,7 @@ class ServerConfigurationFrame(Frame):
 
         self.bottom_space_frame = Frame(self)
 
-        self.next_button = Button(self, text="Next", width=15, height=2)
+        self.next_button = Button(self, text="Next", width=15, height=2, command=self.showSelectPathFrame)
         self.back_button = Button(self, text="Back", width=15, height=2, command=self.showLicenseFrame)
 
     def drawLayout(self):
@@ -259,6 +260,11 @@ class ServerConfigurationFrame(Frame):
         self.destroy()
         LicenseFrame(self.parent)
 
+    def showSelectPathFrame(self):
+        self.pack_forget()
+        self.destroy()
+        SelectPathFrame(self.parent)
+
     def setAutoStartButtonStatus(self):
         if self.run_at_startup_var.get() or self.run_at_user_log_var.get() == 1:
             self.auto_start_buttom.config(state=NORMAL)
@@ -284,6 +290,77 @@ class ServerConfigurationFrame(Frame):
             pass
         else:
             pass
+
+
+class SelectPathFrame(Frame):
+
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+
+        self.parent = parent
+        self.parent.title("FLE - KA Lite Setup - Select where to install KA Lite")
+        self.loadImages()
+        self.configureLayout()
+        self.drawLayout()
+
+    def loadImages(self):
+        """Loads the images. The size must be the exact size of the image."""
+
+        self.kaliteleaf_photo = PhotoImage(file="images/kaliteleaf.gif", width=16, height=16)
+
+    def configureLayout(self):
+
+        self.top_frame = Frame(self, relief=RAISED, borderwidth=1)
+
+        self.tip_label = Label(self.top_frame, text="Select the path where you want to install.")
+        self.kaliteleaf_label = Label(self.top_frame, image=self.kaliteleaf_photo, width=16, height=16)
+        self.kaliteleaf_label.image = self.kaliteleaf_photo
+
+        self.path_label_one_frame = Frame(self)
+        self.path_label_one = Label(self.path_label_one_frame, text="Setup will install KA Lite into the following folder.")
+        self.path_label_two_frame = Frame(self)
+        self.path_label_two = Label(self.path_label_two_frame, text="To continue, click Next. If you would like to select a different folder, click Browse.")
+
+        self.path_frame = Frame(self)
+        self.path_entry = Entry(self.path_frame, width=55)
+        self.path_entry.insert(INSERT, os.path.dirname(os.path.abspath(__file__)))
+        self.browse_button = Button(self.path_frame, text="Browse", width=8, height=1, command=self.browseDirectory)
+
+        self.bottom_space_frame = Frame(self)
+
+        self.next_button = Button(self, text="Next", width=15, height=2)
+        self.back_button = Button(self, text="Back", width=15, height=2, command=self.showServerConfigurationFrame)
+
+    def drawLayout(self):
+        self.pack(fill=BOTH, expand=True)
+        self.top_frame.pack(fill=X)
+        self.tip_label.pack(fill=X, side=LEFT, padx=5, pady=5)
+        self.kaliteleaf_label.pack(fill=X, side=RIGHT, padx=5, pady=5)
+
+        self.path_label_one_frame.pack(fill=X)
+        self.path_label_one.pack(fill=X, expand=True, pady=(10,5))
+
+        self.path_label_two_frame.pack(fill=X)
+        self.path_label_two.pack(fill=X, side=LEFT, pady=(10,10))
+
+        self.path_frame.pack(fill=X, side=TOP)
+        self.path_entry.pack(fill=X, side=LEFT, padx=(10,0), pady=(15,0))
+        self.browse_button.pack(fill=X, side=RIGHT, padx=(0,10), pady=(15,0))
+
+        self.bottom_space_frame.pack(fill=BOTH, expand=True)
+
+        self.next_button.pack(side=RIGHT, padx=5, pady=5)
+        self.back_button.pack(side=RIGHT)        
+
+    def browseDirectory(self):
+        path = fd.askdirectory().replace("/", "\\")
+        self.path_entry.delete(0, END)
+        self.path_entry.insert(INSERT, path)
+
+    def showServerConfigurationFrame(self):
+        self.pack_forget()
+        self.destroy()
+        ServerConfigurationFrame(self.parent)
 
 
 def createRootWindow(width, height):
@@ -326,7 +403,7 @@ def main():
     root_window = createRootWindow(445, 350)
     
     #WelcomeFrame(root_window)
-    LicenseFrame(root_window)
+    SelectPathFrame(root_window)
 
     root_window.mainloop()
 
