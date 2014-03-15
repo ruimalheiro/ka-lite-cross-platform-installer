@@ -50,7 +50,6 @@ class WelcomeFrame(Frame):
     def configureLayout(self):
         """Configures the frame and the components that belong to this frame."""
 
-        self.pack(fill=BOTH, expand=True)
         self.top_frame = Frame(self)
         self.bottom_frame = Frame(self)
         self.bottom_left_frame = Frame(self.bottom_frame)
@@ -64,22 +63,23 @@ class WelcomeFrame(Frame):
 
         self.install_button = Button(self.bottom_right_frame, text="Install", command=self.showLicenseFrame, width=24, height=5)
 
-        self.quit_button = Button(self.bottom_right_frame, text="Quit", command=self.confirmQuit, width=24, height=5)
+        self.quit_button = Button(self.bottom_right_frame, text="Quit", command=quitInstaller, width=24, height=5)
 
         self.version_label = Label(self.bottom_left_frame, text="KA Lite version: " + str(VERSION), width=30, height=5)
 
     def drawLayout(self):
         """Draws the frame with all the components that were previously configured."""
 
+        self.pack(fill=BOTH, expand=True)
         self.top_frame.pack(fill=BOTH, expand=True)
         self.bottom_frame.pack(fill=BOTH, expand=True)
         self.bottom_left_frame.pack(fill=BOTH, expand=True, side=LEFT)
         self.bottom_right_frame.pack(fill=BOTH, expand=True, side=RIGHT)
-        self.fle_label.pack(expand=True, fill=X)
-        self.kalite_label.pack(expand=True, fill=X)
-        self.install_button.pack(side=TOP, fill=X)
-        self.quit_button.pack(side=BOTTOM, fill=X)
-        self.version_label.pack(expand=True, fill=X)
+        self.fle_label.pack(fill=X, expand=True)
+        self.kalite_label.pack(fill=X, expand=True)
+        self.install_button.pack(fill=X, side=TOP)
+        self.quit_button.pack(fill=X, side=BOTTOM)
+        self.version_label.pack(fill=X, expand=True)
 
     def showLicenseFrame(self):
         """Changes the frame to the license frame."""
@@ -92,10 +92,6 @@ class WelcomeFrame(Frame):
         self.pack_forget()
         self.destroy()
         ServerConfigurationFrame(self.parent)
-
-    def confirmQuit(self):
-        if mb.askyesno("Quit the installer.", "Are you sure you want to quit?"):
-            self.quit()
 
 
 class LicenseFrame(Frame):
@@ -122,8 +118,6 @@ class LicenseFrame(Frame):
     def configureLayout(self):
         """Configures the frame and the components that belong to this frame."""
         
-        self.pack(fill=BOTH, expand=True)
-
         self.license_area = ScrolledText(self, width=4, height=4, wrap=WORD)
         self.license_area.insert(INSERT, LICENSE)
         self.license_area.config(state=DISABLED)
@@ -132,14 +126,14 @@ class LicenseFrame(Frame):
         self.accept_var = IntVar()
         self.accept_button = Checkbutton(self, text="I accept the license terms.", variable=self.accept_var, command=self.onCheck)
 
-        self.next_button = Button(self, text="Next", width=15, height=2, state=DISABLED)
+        self.next_button = Button(self, text="Next", width=15, height=2, command=self.showServerConfigurationFrame, state=DISABLED)
         self.back_button = Button(self, text="Back", width=15, height=2, command=self.showWelcomeFrame)
 
     def drawLayout(self):
         """Draws the frame with all the components that were previously configured."""
 
         self.pack(fill=BOTH, expand=True)
-        self.license_area.pack(expand=True, fill=BOTH)
+        self.license_area.pack(fill=BOTH, expand=True)
         self.accept_button.pack(side=LEFT)
         self.next_button.pack(side=RIGHT, padx=5, pady=5)
         self.back_button.pack(side=RIGHT)
@@ -159,6 +153,13 @@ class LicenseFrame(Frame):
         self.destroy()
         WelcomeFrame(self.parent)
 
+    def showServerConfigurationFrame(self):
+        """Changes to the server configuration frame."""
+
+        self.pack_forget()
+        self.destroy()
+        ServerConfigurationFrame(self.parent)
+
 
 class ServerConfigurationFrame(Frame):
 
@@ -168,7 +169,56 @@ class ServerConfigurationFrame(Frame):
 
         self.parent = parent
         self.parent.title("FLE - KA Lite Setup - Server configuration")
+        self.loadImages()
+        self.configureLayout()
+        self.drawLayout()
 
+    def loadImages(self):
+        """Loads the images. The size must be the exact size of the image."""
+
+        self.kaliteleaf_photo = PhotoImage(file="images/kaliteleaf.gif", width=16, height=16)
+
+    def configureLayout(self):
+
+        self.top_frame = Frame(self, relief=RAISED, borderwidth=1)
+
+        self.tip_label = Label(self.top_frame, text="Gathering data to configure KA Lite server.")
+        self.kaliteleaf_label = Label(self.top_frame, image=self.kaliteleaf_photo, width=16, height=16)
+        self.kaliteleaf_label.image = self.kaliteleaf_photo
+
+        self.server_frame = Frame(self)
+        self.server_name_label = Label(self.server_frame, text="Server name:")
+        self.server_name_entry = Entry(self.server_frame, width=50)
+        self.server_name_entry.focus()
+
+        self.description_frame = Frame(self)
+        self.description_label = Label(self.description_frame, text="Description:")
+        self.description_entry = Entry(self.description_frame, width=50)
+
+        self.bottom_space_frame = Frame(self)
+
+        self.next_button = Button(self, text="Next", width=15, height=2)
+        self.back_button = Button(self, text="Back", width=15, height=2, command=self.showLicenseFrame)
+
+    def drawLayout(self):
+        self.pack(fill=BOTH, expand=True)
+        self.top_frame.pack(fill=X)
+        self.tip_label.pack(fill=X, side=LEFT, padx=5, pady=5)
+        self.kaliteleaf_label.pack(fill=X, side=RIGHT, padx=5, pady=5)
+        self.server_frame.pack(fill=X, expand=False, pady=10)
+        self.server_name_label.pack(expand=False, side=LEFT, padx=10)
+        self.server_name_entry.pack(expand=False, side=RIGHT, padx=10)
+        self.description_frame.pack(fill=X, expand=False)
+        self.description_label.pack(expand=False, side=LEFT, padx=10)
+        self.description_entry.pack(expand=False, side=RIGHT, padx=10)
+        self.bottom_space_frame.pack(fill=BOTH, expand=True)
+        self.next_button.pack(side=RIGHT, padx=5, pady=5)
+        self.back_button.pack(side=RIGHT)
+        
+    def showLicenseFrame(self):
+        self.pack_forget()
+        self.destroy()
+        LicenseFrame(self.parent)
 
 def createRootWindow(width, height):
     """Creates an instance of Tk which is the main window of the application and configure it.
@@ -186,7 +236,8 @@ def createRootWindow(width, height):
 
     root_window = Tk()
     root_window.resizable(0,0)
-    root_window.protocol('WM_DELETE_WINDOW', ignoreXButton)
+    root_window.protocol('WM_DELETE_WINDOW', quitInstaller)
+    root_window.tk.call('wm', 'iconphoto', root_window._w, PhotoImage(file="images/kaliteleaf.gif", width=16, height=16))
 
     screen_width = root_window.winfo_screenwidth()
     screen_height = root_window.winfo_screenheight()
@@ -198,15 +249,18 @@ def createRootWindow(width, height):
 
     return root_window
 
-def ignoreXButton():
-    """For full control over the user options, we are ignoring the closing button that would terminate the installer in any point."""
-    pass
+def quitInstaller():
+    """This function controls what happen when the user press the X button or any other option to quit the installer.
+    """
+    if mb.askyesno("Quit the installer.", "Are you sure you want to quit?"):
+            sys.exit(0)
 
 def main():
     
     root_window = createRootWindow(445, 350)
     
-    WelcomeFrame(root_window)
+    #WelcomeFrame(root_window)
+    ServerConfigurationFrame(root_window)
 
     root_window.mainloop()
 
