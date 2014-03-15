@@ -188,12 +188,12 @@ class ServerConfigurationFrame(Frame):
 
         self.server_frame = Frame(self)
         self.server_name_label = Label(self.server_frame, text="Server name:")
-        self.server_name_entry = Entry(self.server_frame, width=40)
+        self.server_name_entry = Entry(self.server_frame, width=45)
         self.server_name_entry.focus()
 
         self.description_frame = Frame(self)
         self.description_label = Label(self.description_frame, text="Description:")
-        self.description_entry = Entry(self.description_frame, width=40)
+        self.description_entry = Entry(self.description_frame, width=45)
 
         self.bottom_space_frame = Frame(self)
 
