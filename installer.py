@@ -3,7 +3,7 @@ from ScrolledText import ScrolledText
 import tkMessageBox as mb
 import tkFileDialog as fd
 from ttk import Progressbar
-import sys, os, platform
+import sys, os, platform, shutil
 
 #In order to retrieve the version, we need to add ka-lite to the path, so we can import kalite.
 sys.path.insert(0, './ka-lite')
@@ -383,37 +383,111 @@ class InstallationFrame(Frame):
         Frame.__init__(self, parent)
         self.parent = parent
         self.parent.title("FLE - KA Lite Setup - Start installation")
-        self.b = Button(self, text="teste", command=self.startInstallation)
+        self.loadImages()
+        self.configureLayout()
+        self.drawLayout()
+
+    def loadImages(self):
+        """Loads the images. The size must be the exact size of the image."""
+
+        self.kaliteleaf_photo = PhotoImage(file="images/kaliteleaf.gif", width=16, height=16)
+
+    def configureLayout(self):
+
+        self.top_frame = Frame(self, relief=RAISED, borderwidth=1)
+
+        self.tip_label_text = StringVar()
+        self.tip_label = Label(self.top_frame, textvariable=self.tip_label_text)
+        self.tip_label_text.set("Install KA Lite")
+
+        self.kaliteleaf_label = Label(self.top_frame, image=self.kaliteleaf_photo, width=16, height=16)
+        self.kaliteleaf_label.image = self.kaliteleaf_photo
+
+        self.info_label_text = StringVar()
+        self.info_label_frame = Frame(self)
+        self.info_label = Label(self.info_label_frame, textvariable=self.info_label_text)
+        self.info_label_text.set("Ready to start...")
+
+        self.progress_bar_frame = Frame(self)
+        self.progress_bar_value = IntVar()
+        self.progress_bar = Progressbar(self.progress_bar_frame, mode="indeterminate", variable=self.progress_bar_value, length=400)
+
+        self.bottom_space_frame = Frame(self)
+
+        self.install_button_frame = Frame(self)
+        self.install_button = Button(self.install_button_frame, text="Install", command=self.startInstallation, width=15, height=2)
+
+    def drawLayout(self):
+
         self.pack(fill=BOTH, expand=True)
-        self.b.pack()
+        self.top_frame.pack(fill=X)
+        self.tip_label.pack(fill=X, side=LEFT, padx=5, pady=5)
+        self.kaliteleaf_label.pack(fill=X, side=RIGHT, padx=5, pady=5)
 
-        self.pb = Progressbar(self, mode="indeterminate")
-        self.pb.pack()
+        self.info_label_frame.pack(fill=X)
+        self.info_label.pack(fill=X, expand=True, padx=10, pady=10)
 
-        self.pb2 = Progressbar(self, mode="determinate")
-        self.pb2.pack()
+        self.progress_bar_frame.pack(fill=X)
+        self.progress_bar.pack(fill=X, expand=True, padx=15, pady=15)
+
+        self.bottom_space_frame.pack(fill=BOTH, expand=True)
+
+        self.install_button_frame.pack(fill=X)
+        self.install_button.pack(fill=X, side=RIGHT)
 
     def startInstallation(self):
         global TARGET_PATH
         if not TARGET_PATH:
             return
         src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ka-lite")
-        self.pb.start(10)
-        #num_files=self.countFiles(src)
-        
- 
-        t1 = FuncThread(self.countFiles, src, self.pb)
+        self.progress_bar.start(10)
+        self.number_of_files = 0
+        t1 = FuncThread(self.startInstall, src, self.progress_bar, self.number_of_files, self.progress_bar_value, self.tip_label_text, self.info_label_text, self.install_button)
         t1.start()
-        #self.pb.stop()
 
-    def countFiles(self, directory, pb):
+    def startInstall(self, src, progress_bar, number_of_files, progress_bar_value, tip_label_text, info_label_text, install_button):
+        install_button.config(state=DISABLED, text="Quit")
+        tip_label_text.set("Preparing to install KA Lite...")
+        info_label_text.set("Calculating the number of files to copy...")
+
         files = []     
-        if os.path.isdir(directory):
-            for path, dirs, filenames, in os.walk(directory):
+        if os.path.isdir(src):
+            for path, dirs, filenames, in os.walk(src):
                 files.extend(filenames)
-                print "1"
-        pb.stop()
-        return len(files)
+        number_of_files = len(files)
+        
+        progress_bar.stop()
+        progress_bar.config(maximum=number_of_files, mode="determinate", length=400)
+        progress_bar_value.set(0)
+        count = 0
+
+        tip_label_text.set("Installing...")
+        info_label_text.set(str(count)+" of "+str(number_of_files)+" copied.")
+        
+        list = []
+        for path, dirs, filenames in os.walk(src):
+            list.append((path, dirs, filenames))
+        if not os.path.exists(TARGET_PATH):
+            os.makedirs(TARGET_PATH)
+
+        for t in list:
+            for directory in t[1]:
+                destDir = t[0].replace(src,TARGET_PATH)
+                if not os.path.exists(os.path.join(destDir, directory)):
+                    os.makedirs(os.path.join(destDir, directory))
+
+            for sfile in t[2]:
+                srcFile = os.path.join(t[0], sfile) 
+                destFile = os.path.join(t[0].replace(src, TARGET_PATH), sfile)             
+                shutil.copy(srcFile, destFile)
+                count+=1
+                info_label_text.set(str(count)+" of "+str(number_of_files)+" copied.")
+                progress_bar_value.set(count)
+
+        install_button.config(state=NORMAL, command=quitInstaller())
+        tip_label_text.set("Installation complete.")
+        info_label_text.set("All files were sucessfuly copied.")
+        return
 
 import threading
 class FuncThread(threading.Thread):
