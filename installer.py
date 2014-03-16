@@ -417,6 +417,8 @@ class InstallationFrame(Frame):
         self.install_button_frame = Frame(self)
         self.install_button = Button(self.install_button_frame, text="Install", command=self.startInstallation, width=15, height=2)
 
+        self.quit_button = Button(self.install_button_frame, text="Quit", state=DISABLED, command=quitInstaller, width=15, height=2)
+
     def drawLayout(self):
 
         self.pack(fill=BOTH, expand=True)
@@ -432,8 +434,10 @@ class InstallationFrame(Frame):
 
         self.bottom_space_frame.pack(fill=BOTH, expand=True)
 
-        self.install_button_frame.pack(fill=X)
-        self.install_button.pack(fill=X, side=RIGHT)
+        self.quit_button.pack(fill=X, side=RIGHT)
+
+        self.install_button_frame.pack(fill=X, padx=5, pady=5)
+        self.install_button.pack(fill=X, side=RIGHT, padx=5)
 
     def startInstallation(self):
         global TARGET_PATH
@@ -442,11 +446,11 @@ class InstallationFrame(Frame):
         src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ka-lite")
         self.progress_bar.start(10)
         self.number_of_files = 0
-        t1 = FuncThread(self.startInstall, src, self.progress_bar, self.number_of_files, self.progress_bar_value, self.tip_label_text, self.info_label_text, self.install_button)
+        t1 = FuncThread(self.startInstall, src, self.progress_bar, self.number_of_files, self.progress_bar_value, self.tip_label_text, self.info_label_text, self.install_button, self.quit_button)
         t1.start()
 
-    def startInstall(self, src, progress_bar, number_of_files, progress_bar_value, tip_label_text, info_label_text, install_button):
-        install_button.config(state=DISABLED, text="Quit")
+    def startInstall(self, src, progress_bar, number_of_files, progress_bar_value, tip_label_text, info_label_text, install_button, quit_button):
+        install_button.config(state=DISABLED)
         tip_label_text.set("Preparing to install KA Lite...")
         info_label_text.set("Calculating the number of files to copy...")
 
@@ -484,7 +488,7 @@ class InstallationFrame(Frame):
                 info_label_text.set(str(count)+" of "+str(number_of_files)+" copied.")
                 progress_bar_value.set(count)
 
-        install_button.config(state=NORMAL, command=quitInstaller())
+        quit_button.config(state=NORMAL)
         tip_label_text.set("Installation complete.")
         info_label_text.set("All files were sucessfuly copied.")
         return
