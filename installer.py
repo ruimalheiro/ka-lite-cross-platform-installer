@@ -326,7 +326,8 @@ class SelectPathFrame(Frame):
         self.path_label_two = Label(self.path_label_two_frame, text="If you would like to select a different folder, click Browse.")
 
         self.path_frame = Frame(self)
-        self.path_entry = Entry(self.path_frame, width=50)
+        self.path_entry_text = StringVar()
+        self.path_entry = Entry(self.path_frame, width=50, textvariable=self.path_entry_text)
 
         global TARGET_PATH
         self.path_entry.insert(INSERT, TARGET_PATH)
@@ -372,6 +373,22 @@ class SelectPathFrame(Frame):
         ServerConfigurationFrame(self.parent)
 
     def showInstallationFrame(self):
+        global TARGET_PATH
+        if self.path_entry_text.get() == "":
+            mb.showerror("Invalid directory", "Path cannot be empty.")
+            return
+
+        if not os.path.exists(os.path.dirname(self.path_entry_text.get())):
+            try:
+                if mb.askyesno("Directory doesn't exist.", "'%s' doesn't exist, do you want to create it?" % (os.path.dirname(self.path_entry_text.get()))):
+                    os.makedirs(self.path_entry_text.get())
+                else:
+                    return
+            except OSError:
+                mb.showerror("Invalid directory", "You must enter a valid directory.")
+                return
+
+        TARGET_PATH = self.path_entry_text.get()
         self.pack_forget()
         self.destroy()
         InstallationFrame(self.parent)
@@ -543,7 +560,8 @@ def main():
     
     root_window = createRootWindow(445, 350)
     
-    WelcomeFrame(root_window)
+    #WelcomeFrame(root_window)
+    SelectPathFrame(root_window)
 
     root_window.mainloop()
 
