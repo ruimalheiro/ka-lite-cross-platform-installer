@@ -1,18 +1,19 @@
 from __future__ import print_function, unicode_literals, absolute_import
-import sys, os, subprocess
+import sys, os, subprocess, platform
 
 try:
     import toga
 except ImportError:
-   # print (os.path.dirname(os.path.realpath(__file__)) + "\\Toga\\toga\\setup.py")
-    #os.system("start /b " + os.path.dirname(os.path.realpath(__file__)) + "\\Toga\\toga\\setup.py")
-    #os.system("start python")
-    #os.system("cd " + os.path.dirname(os.path.realpath(__file__)) + "\\Toga\\toga\\ && dir")
-    current_dir = os.getcwd()
-    os.chdir(os.path.dirname(os.path.realpath(__file__)) + "\\Toga\\toga\\")
-    subprocess.call(["python", os.path.dirname(os.path.realpath(__file__)) + "\\setup.py", "install"], shell=False)
-    os.chdir(current_dir)
-    import toga
+    if platform.system() == "Windows":
+        current_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "\\Toga\\toga\\")
+        subprocess.call(["python", os.path.dirname(os.path.realpath(__file__)) + "\\setup.py", "install"], shell=False)
+        os.chdir(current_dir)
+        import toga
+    elif platform.system() == "Linux":
+        print("Linux!")
+        sys.exit(0)
+        pass
 
 def button_handler(widget):
         print("Hello FLE!")
